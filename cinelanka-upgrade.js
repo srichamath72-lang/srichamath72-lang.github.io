@@ -1,51 +1,59 @@
-// cinelanka-upgrade.js
+// cinelanka-upgrade.js (v2)
 // 100% SAFE / ADDITIVE. Does NOT edit, delete, or touch index.html.
-// Loaded as a separate <script> tag. Runs only after the page has fully
-// loaded. Every operation is wrapped in try/catch and checks elements
-// exist before touching them. If anything is missing or fails, it simply
-// does nothing for that part - it will never throw an error that breaks
-// the page.
-//
-// What it does:
-//  1) Replaces the hero banner content (the big "Maharaja Gemunu" block)
-//     with a rotating "Welcome" intro instead of one specific movie.
-//  2) Fetches real posters from TMDB for the existing movie cards
-//     (matched by the title text already on the page) and overlays them.
-//  3) Adds many more movie cards (with real TMDB posters) into the
-//     existing grids, so there are thousands of titles to browse.
+// Fixes from v1:
+//  - More reliable poster matching (logs failures to console for debugging)
+//  - Removes the duplicate year (only shows it once per card)
+//  - Hero section text replaced safely
 
 (function () {
   var TMDB_KEY = "7b4c9174531b7e8770e7b887ce7de165";
   var IMG_BASE = "https://image.tmdb.org/t/p/w342";
   var posterCache = {};
 
-  function safe(fn) {
-    try { fn(); } catch (e) { console.error("cinelanka-upgrade:", e); }
+  function safe(fn, label) {
+    try { fn(); } catch (e) { console.error("cinelanka-upgrade [" + label + "]:", e); }
   }
 
-  /* ---------- 1) Replace hero content (non-destructive) ---------- */
+  /* ---------- 1) Hero text replace ---------- */
 
   function upgradeHero() {
     var heroTitle = document.querySelector(".hero-title");
     var heroDesc = document.querySelector(".hero-desc");
+    if (!heroTitle || !heroDesc) return;
+    if (heroTitle.getAttribute("data-upgraded") === "1") return;
+
+    heroTitle.textContent = "Discover Your Next Favorite Film";
+    heroDesc.textContent = "Browse thousands of movies from Sri Lanka and around the world - real posters, real ratings, updated live.";
+    heroTitle.setAttribute("data-upgraded", "1");
+
     var heroTags = document.querySelector(".hero-tags");
     var heroMeta = document.querySelector(".hero-meta");
     var heroBtns = document.querySelector(".hero-btns");
-
-    if (!heroTitle || !heroDesc) return; // hero not present, skip safely
-
-    heroTitle.textContent = "Discover Your Next Favorite Film";
-    heroDesc.textContent = "Browse thousands of movies from Sri Lanka and around the world — real posters, real ratings, updated live.";
-
     if (heroTags) heroTags.style.display = "none";
     if (heroMeta) heroMeta.style.display = "none";
     if (heroBtns) heroBtns.style.display = "none";
   }
 
-  /* ---------- 2) Overlay real posters onto existing cards ---------- */
+  /* ---------- 2) Remove duplicate year on cards ---------- */
+
+  function dedupeYears() {
+    document.querySelectorAll(".card-sub").forEach(function (el) {
+      if (el.getAttribute("data-deduped") === "1") return;
+      el.setAttribute("data-deduped", "1");
+      // card-sub originally shows "YEAR · GENRE" - keep only the genre part
+      var parts = el.textContent.split("·");
+      if (parts.length > 1) {
+        el.textContent = parts.slice(1).join("·").trim();
+      } else {
+        el.style.display = "none";
+      }
+    });
+  }
+
+  /* ---------- 3) Fetch + apply real posters ---------- */
 
   function fetchPoster(title, year) {
-    var key = title + "_" + (year || "");
+    var key = (title + "_" + (year || "")).toLowerCase();
     if (posterCache[key] !== undefined) return Promise.resolve(posterCache[key]);
 
     var url = "https://api.themoviedb.org/3/search/movie?api_key=" + TMDB_KEY +
@@ -54,115 +62,86 @@
     return fetch(url)
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        var path = data.results && data.results[0] && data.results[0].poster_path;
-        var full = path ? IMG_BASE + path : null;
+        var first = data.results && data.results[0];
+        var full = first && first.poster_path ? IMG_BASE + first.poster_path : null;
         posterCache[key] = full;
+        if (!full) console.warn("No TMDB poster found for:", title, year);
         return full;
       })
-      .catch(function () { return null; });
+      .catch(function (e) {
+        console.error("TMDB fetch failed for:", title, e);
+        return null;
+      });
+  }
+
+  function applyImage(box, url) {
+    if (!box || !url) return;
+    box.style.backgroundImage = "url('" + url + "')";
+    box.style.backgroundSize = "cover";
+    box.style.backgroundPosition = "center";
+    // Fade out the emoji/icon layer if present (first child div with text)
+    var children = box.children;
+    for (var i = 0; i < children.length; i++) {
+      if (children[i].textContent && children[i].textContent.trim() === "🎬") {
+        children[i].style.opacity = "0";
+      }
+    }
   }
 
   function applyRealPosters() {
-    var cards = document.querySelectorAll(".card, .modal");
-    cards.forEach(function (card) {
+    // Card posters (grid view)
+    document.querySelectorAll(".poster-wrap").forEach(function (wrap) {
       try {
-        var bg = card.querySelector(".poster-bg, .modal-hero-bg");
-        if (!bg || bg.getAttribute("data-upgraded") === "1") return;
+        var bg = wrap.querySelector(".poster-bg");
+        if (!bg || bg.getAttribute("data-poster-done") === "1") return;
 
-        var titleEl = card.querySelector(".poster-title, .modal-title");
-        var yearEl = card.querySelector(".poster-year, .modal-meta span");
+        var titleEl = wrap.querySelector(".poster-title");
         if (!titleEl) return;
-
         var title = titleEl.textContent.trim();
-        var yearMatch = yearEl ? yearEl.textContent.match(/\d{4}/) : null;
-        var year = yearMatch ? yearMatch[0] : null;
+        if (!title) return;
 
-        bg.setAttribute("data-upgraded", "1");
+        var yearEl = wrap.querySelector(".poster-year");
+        var year = yearEl ? (yearEl.textContent.match(/\d{4}/) || [])[0] : null;
 
-        fetchPoster(title, year).then(function (url) {
-          if (!url) return;
-          bg.style.backgroundImage = "url('" + url + "')";
-          bg.style.backgroundSize = "cover";
-          bg.style.backgroundPosition = "center";
-        });
-      } catch (e) { /* skip this card silently */ }
+        bg.setAttribute("data-poster-done", "1");
+        fetchPoster(title, year).then(function (url) { applyImage(bg, url); });
+      } catch (e) { console.error("Card poster error:", e); }
+    });
+
+    // Modal poster (when a movie detail popup is open)
+    document.querySelectorAll(".modal-hero").forEach(function (hero) {
+      try {
+        if (hero.getAttribute("data-poster-done") === "1") return;
+        var titleEl = hero.querySelector(".modal-title");
+        if (!titleEl) return;
+        var title = titleEl.textContent.trim();
+        if (!title) return;
+
+        var metaEl = hero.parentElement ? hero.parentElement.querySelector(".modal-meta") : null;
+        var year = metaEl ? (metaEl.textContent.match(/\d{4}/) || [])[0] : null;
+
+        hero.setAttribute("data-poster-done", "1");
+        fetchPoster(title, year).then(function (url) { applyImage(hero, url); });
+      } catch (e) { console.error("Modal poster error:", e); }
     });
   }
 
-  /* ---------- 3) Append more real movies into existing grids ---------- */
-
-  function cardMarkup(movie) {
-    var poster = movie.poster_path ? IMG_BASE + movie.poster_path : "";
-    var rating = movie.vote_average ? movie.vote_average.toFixed(1) : "N/A";
-    var year = (movie.release_date || "").slice(0, 4) || "—";
-    var title = (movie.title || "Untitled").replace(/</g, "&lt;");
-
-    var div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML =
-      '<div class="poster-wrap">' +
-        '<div class="poster-bg" style="background-image:url(\'' + poster + '\');background-size:cover;background-position:center;" data-upgraded="1"></div>' +
-        '<div class="poster-shade"></div>' +
-        '<div class="poster-info">' +
-          '<div class="poster-title">' + title + '</div>' +
-          '<div class="poster-year">' + year + '</div>' +
-        '</div>' +
-        '<div class="poster-rating">⭐ ' + rating + '</div>' +
-      '</div>' +
-      '<div class="card-meta">' +
-        '<div class="card-title">' + title + '</div>' +
-        '<div class="card-sub">' + year + '</div>' +
-      '</div>';
-    return div;
-  }
-
-  function appendMoviesToGrids() {
-    var grids = document.querySelectorAll(".grid");
-    if (!grids.length) return;
-
-    // Fetch one page (~20 movies) of popular movies from TMDB,
-    // and distribute extra cards into the existing grids so the
-    // site feels like it has many more titles, without removing
-    // any of the original ones.
-    var page = Math.floor(Math.random() * 20) + 1;
-    fetch("https://api.themoviedb.org/3/movie/popular?api_key=" + TMDB_KEY + "&page=" + page)
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
-        var results = data.results || [];
-        if (!results.length) return;
-
-        grids.forEach(function (grid, gIndex) {
-          if (grid.getAttribute("data-extended") === "1") return;
-          grid.setAttribute("data-extended", "1");
-
-          var slice = results.slice(gIndex * 4, gIndex * 4 + 6);
-          slice.forEach(function (movie) {
-            grid.appendChild(cardMarkup(movie));
-          });
-        });
-      })
-      .catch(function (e) { console.error("cinelanka-upgrade extra movies:", e); });
-  }
-
-  /* ---------- Run everything safely after full load ---------- */
+  /* ---------- Run safely, repeatedly (for re-renders) ---------- */
 
   function runAll() {
-    safe(upgradeHero);
-    safe(applyRealPosters);
-    safe(appendMoviesToGrids);
+    safe(upgradeHero, "hero");
+    safe(dedupeYears, "dedupe-years");
+    safe(applyRealPosters, "posters");
+  }
 
-    // Re-scan periodically since this is a client-side React app that
-    // re-renders content (filters, modals) without a full page reload.
-    setInterval(function () {
-      safe(applyRealPosters);
-    }, 2000);
+  function start() {
+    runAll();
+    setInterval(runAll, 1500);
   }
 
   if (document.readyState === "complete") {
-    setTimeout(runAll, 1200);
+    setTimeout(start, 1200);
   } else {
-    window.addEventListener("load", function () {
-      setTimeout(runAll, 1200);
-    });
+    window.addEventListener("load", function () { setTimeout(start, 1200); });
   }
 })();
