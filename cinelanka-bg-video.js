@@ -42,7 +42,7 @@
     var overlay = document.createElement("div");
     overlay.style.cssText =
       "position:absolute;inset:0;" +
-      "background:rgba(9,9,11,0.82);"; // dark overlay so existing text stays readable
+      "background:rgba(9,9,11,0.5);"; // lighter overlay so the video is clearly visible
 
     wrap.appendChild(iframe);
     wrap.appendChild(overlay);
