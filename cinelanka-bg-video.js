@@ -11,7 +11,7 @@
   function injectBackgroundVideo() {
     if (document.getElementById("cl-bg-video-wrap")) return;
 
-    // සයිට් එකේ කන්ටෙන්ට් එක සුපිරියටම මතු කරවන සහ පරණ තද කළු backgrounds ඉවත් කරන කොටස
+    // සයිට් එකේ කන්ටෙන්ට් මතු කරන සහ පරණ බැක්ග්‍රවුන්ඩ් අයින් කරන CSS
     var style = document.createElement('style');
     style.textContent = `
       html, body {
@@ -39,9 +39,9 @@
       "position:fixed;top:0;left:0;width:100vw;height:100vh;" +
       "z-index:-9999 !important;overflow:hidden;pointer-events:none;background:#060608;";
 
-    // 🛠️ PERMANENT FIX: යූටියුබ් බටන්ස් ස්ක්‍රීන් එකෙන් පිටතට තල්ලු කර සැඟවීම (Clip/Masking Effect)
+    // 🛠️ FIX: ක්ලිපර් එක 100% ක් මුළු ස්ක්‍රීන් එකම වසන සේ නැවත හැදුවා (දැන් වීඩියෝ එක අනිවාර්යයෙන්ම පේනවා)
     var clipper = document.createElement("div");
-    clipper.style.cssText = "position:absolute;top:5%;left:5%;width:90vw;height:90vh;overflow:hidden;pointer-events:none;";
+    clipper.style.cssText = "position:absolute;inset:0;overflow:hidden;pointer-events:none;";
 
     var iframe = document.createElement("iframe");
     iframe.src =
@@ -52,22 +52,23 @@
     iframe.setAttribute("allow", "autoplay; encrypted-media");
     iframe.setAttribute("tabindex", "-1");
     
-    // 🛠️ බටන්ස් හැංගෙන්න වීඩියෝව විශාල කර (Scale 1.6), මැද කොටස පමණක් Screen එකට ගැනීම
+    // 🛠️ වීඩියෝ එක මුළු ස්ක්‍රීන් එකටම ලස්සනට ෆිට් කර, ඕනෑම ක්ලික් එකක් බ්ලොක් කර අයිකන්ස් නැති කිරීම
     iframe.style.cssText =
       "position:absolute;top:50%;left:50%;" +
-      "width:160vw;height:120vh;" + 
-      "transform:translate(-50%,-50%) scale(1.6);border:none;pointer-events:none;" +
-      "opacity: 0.12 !important;"; 
+      "width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh;" + 
+      "transform:translate(-50%,-50%) scale(1.3);border:none;pointer-events:none;" +
+      "opacity: 0.15 !important;"; 
 
     // මූවිස් ලස්සනට පේන්න වීඩියෝව උඩින් දමන Dark Red / Black Overlay එක
     var overlay = document.createElement("div");
     overlay.style.cssText =
       "position:absolute;inset:0;" +
-      "background: radial-gradient(circle at center, rgba(35, 7, 12, 0.4) 0%, rgba(6, 6, 8, 0.96) 80%) !important;" +
+      "background: radial-gradient(circle at center, rgba(35, 7, 12, 0.45) 0%, rgba(6, 6, 8, 0.96) 80%) !important;" +
       "z-index:2;pointer-events:none;";
 
+    // 🛠️ යූටියුබ් එකේ බටන්ස් උඩින් ක්ලික් වීම වැළැක්වීමට දමන ආරක්ෂිත තට්ටුව (Click Blocker Layer)
     var clickBlocker = document.createElement("div");
-    clickBlocker.style.cssText = "position:absolute;inset:0;z-index:5;background:transparent;";
+    clickBlocker.style.cssText = "position:absolute;inset:0;z-index:5;background:transparent;pointer-events:all;";
 
     clipper.appendChild(iframe);
     wrap.appendChild(clipper);
