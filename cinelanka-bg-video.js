@@ -1,62 +1,139 @@
-// 1. CSS Styles - Image එක බැක්ග්‍රවුන්ඩ් එකට දමා සයිට් එකේ අනෙක් කොටස් Transparent කිරීම
+// 1. Dynamic CSS Styles - Video eke thiyena 3D Film Reel & Floating Strips look eka hadanna
 const style = document.createElement('style');
 style.textContent = `
     /* Main Background Container */
-    .cinema-premium-bg {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: -9999; /* හැමදේටම යටින් තැබීමට */
-        background-color: #060608;
-        /* මම ඔයා වෙනුවෙන්ම හදපු ඔරිජිනල් බැක්ග්‍රවුන්ඩ් ඉමේජ් එක */
-        background-image: url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1920&auto=format&fit=crop');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        pointer-events: none;
+    .cinema-premium-3d-bg {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: -9999 !important; /* Content okkomata yatata danna */
+        background-color: #060608 !important;
+        background: radial-gradient(circle at 30% 30%, #22070d 0%, #060608 85%) !important;
+        overflow: hidden !important;
+        pointer-events: none !important;
     }
 
-    /* රූපයේ තියෙන විදිහට Dark Red & Black Vibe එක දීමට Overlay එකක් */
-    .cinema-premium-bg::before {
+    /* Ambient Glow (Video eke thiyena wage lassanata nivi nivi paththu wena light effect eka) */
+    .ambient-glow-light {
+        position: absolute;
+        width: 120vw;
+        height: 120vh;
+        top: -10%;
+        left: -10%;
+        background: radial-gradient(circle at 20% 30%, rgba(220, 38, 38, 0.04) 0%, transparent 60%),
+                    radial-gradient(circle at 80% 70%, rgba(147, 51, 234, 0.02) 0%, transparent 50%);
+        filter: blur(50px);
+        animation: cinematicPulse 12s infinite alternate ease-in-out;
+    }
+
+    /* 3D Film Reel - Left Side (Video eke wage paththakin karakena loku reel eka) */
+    .film-reel-3d {
+        position: absolute;
+        bottom: -100px;
+        left: -150px;
+        width: 550px;
+        height: 550px;
+        border: 18px solid rgba(255, 255, 255, 0.015);
+        border-radius: 50%;
+        background: radial-gradient(circle, transparent 25%, rgba(0, 0, 0, 0.5) 26%, transparent 70%);
+        box-shadow: inset 0 0 80px rgba(0,0,0,0.9), 0 0 40px rgba(0,0,0,0.6);
+        opacity: 0.12;
+        transform-style: preserve-3d;
+        animation: spinTheReel 90s linear infinite;
+    }
+
+    /* Reel spokes (Reel eke meda thiyena rawum hitala thiyena thawa kootu) */
+    .film-reel-3d::before {
         content: "";
         position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: radial-gradient(circle at center, rgba(61, 20, 29, 0.4) 0%, rgba(7, 7, 8, 0.95) 90%);
-        z-index: 1;
+        top: 0; left: 0; right: 0; bottom: 0;
+        border-radius: 50%;
+        background: repeating-conic-gradient(
+            from 0deg,
+            transparent 0deg,
+            transparent 35deg,
+            rgba(255, 255, 255, 0.02) 36deg,
+            rgba(255, 255, 255, 0.02) 50deg
+        );
     }
 
-    /* සයිට් එකේ Content එක උඩින් ලස්සනට කියවන්න පුළුවන් වෙන්න දාන Glow එකක් */
-    .cinema-premium-bg::after {
-        content: "";
+    /* Floating Film Strips - (Reel eken badila udata floating wela yana film pti 2ka) */
+    .floating-strip {
         position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: linear-gradient(to bottom, transparent 0%, rgba(7, 7, 8, 0.4) 50%, #070708 100%);
-        z-index: 2;
+        width: 160vw;
+        height: 160px;
+        background: rgba(0, 0, 0, 0.75);
+        border-top: 4px dashed rgba(255, 255, 255, 0.15);
+        border-bottom: 4px dashed rgba(255, 255, 255, 0.15);
+        opacity: 0.08;
     }
 
-    /* CRITICAL FIX: සයිට් එකේ දැනට තියෙන Elements වල background එක නිසා මේක වැහෙන එක වැළැක්වීම */
-    body, html {
-        background-color: transparent !important;
+    .strip-wave-1 {
+        top: 15%;
+        left: -10%;
+        transform: rotate(-12deg);
+        animation: floatWaveOne 25s infinite alternate ease-in-out;
+    }
+
+    .strip-wave-2 {
+        bottom: 25%;
+        left: -20%;
+        transform: rotate(15deg);
+        animation: floatWaveTwo 30s infinite alternate ease-in-out;
+    }
+
+    /* Animations - Video eke wage hugaak slow eke float wenna container animations */
+    @keyframes spinTheReel {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @keyframes floatWaveOne {
+        0% { transform: rotate(-12deg) translateY(0px) translateX(0px); }
+        100% { transform: rotate(-10deg) translateY(-20px) translateX(-30px); }
+    }
+
+    @keyframes floatWaveTwo {
+        0% { transform: rotate(15deg) translateY(0px); }
+        100% { transform: rotate(17deg) translateY(25px); }
+    }
+
+    @keyframes cinematicPulse {
+        0% { opacity: 0.5; transform: scale(1); }
+        100% { opacity: 1; transform: scale(1.08); }
+    }
+
+    /* FORCE TRANSPARENT - Parana thada kalu paata backgrounds ain karanna meka aniwarayenma one */
+    html, body, #app, main, section, .hero, .movies-container, .container, .wrapper, [class*="bg-"], [class*="background"] {
         background: transparent !important;
-    }
-
-    /* ඔයාගේ සයිට් එකේ containers/sections කළු පාට වැඩි නම් ඒවා තරමක් transparent කිරීම */
-    main, section, .content-wrapper, .container {
         background-color: transparent !important;
     }
 `;
 document.head.appendChild(style);
 
-// 2. HTML Element එක සේෆ් විදිහට Page එකට එකතු කිරීම
-document.addEventListener('DOMContentLoaded', () => {
-    // දැනටමත් නැත්නම් විතරක් බැක්ග්‍රවුන්ඩ් එක හදන්න
-    if (!document.querySelector('.cinema-premium-bg')) {
+// 2. HTML Elements Injection - DOM eka ready unama safe widihata inject kirima
+function injectCinemaAnimation() {
+    if (!document.querySelector('.cinema-premium-3d-bg')) {
         const bgContainer = document.createElement('div');
-        bgContainer.className = 'cinema-premium-bg';
-        
-        // Body එකේ මුලටම (යටින්ම හිටින්න) ඇතුල් කරනවා
+        bgContainer.className = 'cinema-premium-3d-bg';
+
+        bgContainer.innerHTML = `
+            <div class="ambient-glow-light"></div>
+            <div class="floating-strip strip-wave-1"></div>
+            <div class="floating-strip strip-wave-2"></div>
+            <div class="film-reel-3d"></div>
+        `;
+
+        // Body eke mulatama set karanna
         document.body.insertBefore(bgContainer, document.body.firstChild);
     }
-});
+}
+
+// Safe execute checks
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectCinemaAnimation);
+} else {
+    injectCinemaAnimation();
+}
