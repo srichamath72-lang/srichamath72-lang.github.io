@@ -1,89 +1,62 @@
-// 1. CSS Styles - Background එක සහ Movie Tape එක 100%ක්ම උඩට මතු කර පෙන්වීම
+// 1. CSS Styles - Image එක බැක්ග්‍රවුන්ඩ් එකට දමා සයිට් එකේ අනෙක් කොටස් Transparent කිරීම
 const style = document.createElement('style');
 style.textContent = `
     /* Main Background Container */
-    .cinema-premium-bg-wall {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        z-index: -9999 !important; /* හැමදේටම යටින් තැබීමට */
-        background-color: #050507 !important;
-        background: radial-gradient(circle at center, #250a10 0%, #050507 80%) !important;
-        overflow: hidden !important;
-        pointer-events: none !important;
+    .cinema-premium-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -9999; /* හැමදේටම යටින් තැබීමට */
+        background-color: #060608;
+        /* මම ඔයා වෙනුවෙන්ම හදපු ඔරිජිනල් බැක්ග්‍රවුන්ඩ් ඉමේජ් එක */
+        background-image: url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1920&auto=format&fit=crop');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        pointer-events: none;
     }
 
-    /* Film Strip පටිය */
-    .moving-film-strip-wrapper {
-        position: absolute !important;
-        top: 35% !important;
-        left: 0 !important;
-        width: 300vw !important;
-        display: flex !important;
-        gap: 20px !important;
-        padding: 15px 0 !important;
-        background: rgba(0, 0, 0, 0.85) !important;
-        border-top: 6px dashed rgba(255, 255, 255, 0.25) !important;
-        border-bottom: 6px dashed rgba(255, 255, 255, 0.25) !important;
-        transform: rotate(-7deg) scale(1.1) !important;
-        animation: moveFilmTape 25s linear infinite !important;
+    /* රූපයේ තියෙන විදිහට Dark Red & Black Vibe එක දීමට Overlay එකක් */
+    .cinema-premium-bg::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle at center, rgba(61, 20, 29, 0.4) 0%, rgba(7, 7, 8, 0.95) 90%);
+        z-index: 1;
     }
 
-    /* Film එක ඇතුලේ තියෙන චූටි මූවි ක්ලිප් කොටස් (Boxes) */
-    .animated-movie-box {
-        width: 280px !important;
-        height: 160px !important;
-        border-radius: 6px !important;
-        background-size: cover !important;
-        background-position: center !important;
-        box-shadow: inset 0 0 30px rgba(0,0,0,0.8) !important;
-        opacity: 0.25 !important; /* Content කියවන්න ලේසි වෙන්න තරමක් විනිවිද පෙනේ */
+    /* සයිට් එකේ Content එක උඩින් ලස්සනට කියවන්න පුළුවන් වෙන්න දාන Glow එකක් */
+    .cinema-premium-bg::after {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(to bottom, transparent 0%, rgba(7, 7, 8, 0.4) 50%, #070708 100%);
+        z-index: 2;
     }
 
-    /* Film පටිය වමට ඇදී යන සුපිරි ඇනිමේෂන් එක */
-    @keyframes moveFilmTape {
-        0% { transform: rotate(-7deg) translateX(0) !important; }
-        100% { transform: rotate(-7deg) translateX(-100vw) !important; }
-    }
-
-    /* 🚨 CRITICAL FORCE FIX: සයිට් එකේ පසුබිම වසාගෙන ඇති සියලුම Layers විනිවිද පෙනෙන (Transparent) කිරීම */
-    html, body, #app, main, section, .hero, .movies-container, .container, .wrapper, [class*="bg-"], [class*="background"] {
+    /* CRITICAL FIX: සයිට් එකේ දැනට තියෙන Elements වල background එක නිසා මේක වැහෙන එක වැළැක්වීම */
+    body, html {
+        background-color: transparent !important;
         background: transparent !important;
+    }
+
+    /* ඔයාගේ සයිට් එකේ containers/sections කළු පාට වැඩි නම් ඒවා තරමක් transparent කිරීම */
+    main, section, .content-wrapper, .container {
         background-color: transparent !important;
     }
 `;
 document.head.appendChild(style);
 
-// 2. HTML Elements ටික Page එක ලෝඩ් වෙද්දීම ආරක්ෂිතව ඇතුලත් කිරීම
-function initCinemaBackground() {
-    if (!document.querySelector('.cinema-premium-bg-wall')) {
+// 2. HTML Element එක සේෆ් විදිහට Page එකට එකතු කිරීම
+document.addEventListener('DOMContentLoaded', () => {
+    // දැනටමත් නැත්නම් විතරක් බැක්ග්‍රවුන්ඩ් එක හදන්න
+    if (!document.querySelector('.cinema-premium-bg')) {
         const bgContainer = document.createElement('div');
-        bgContainer.className = 'cinema-premium-bg-wall';
-
-        // බ්ලොක් නොවී වේගයෙන් ලෝඩ් වන High-Quality සිනමා පින්තූර ලින්ක්ස්
-        bgContainer.innerHTML = `
-            <div class="moving-film-strip-wrapper">
-                <div class="animated-movie-box" style="background-image: url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400');"></div>
-                <div class="animated-movie-box" style="background-image: url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=400');"></div>
-                <div class="animated-movie-box" style="background-image: url('https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=400');"></div>
-                <div class="animated-movie-box" style="background-image: url('https://images.unsplash.com/photo-1478720143023-154ed96bcbd9?q=80&w=400');"></div>
-                <div class="animated-movie-box" style="background-image: url('https://images.unsplash.com/photo-1542204172-e7052809f852?q=80&w=400');"></div>
-                <div class="animated-movie-box" style="background-image: url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400');"></div>
-                <div class="animated-movie-box" style="background-image: url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=400');"></div>
-                <div class="animated-movie-box" style="background-image: url('https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=400');"></div>
-            </div>
-        `;
-
-        // Body එකේ මුලටම (යටින්ම හිටින සේ) ආරක්ෂිතව ඇතුල් කිරීම
+        bgContainer.className = 'cinema-premium-bg';
+        
+        // Body එකේ මුලටම (යටින්ම හිටින්න) ඇතුල් කරනවා
         document.body.insertBefore(bgContainer, document.body.firstChild);
     }
-}
-
-// සයිට් එකේ DOM එක ලෝඩ් වුණු වහාම ක්‍රියාත්මක කරවීම (Safe Execution)
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initCinemaBackground);
-} else {
-    initCinemaBackground();
-}
+});
