@@ -1,4 +1,4 @@
-// 1. Dynamic CSS Styles - Video eke thiyena 3D Film Reel & Floating Strips look eka hadanna
+// 1. CSS Styles - සයිට් එකේ උඩින්ම ඇනිමේෂන් එක මතු කර පෙන්වීම සඳහා වන Force Override එක
 const style = document.createElement('style');
 style.textContent = `
     /* Main Background Container */
@@ -8,112 +8,111 @@ style.textContent = `
         left: 0 !important;
         width: 100vw !important;
         height: 100vh !important;
-        z-index: -9999 !important; /* Content okkomata yatata danna */
+        /* සයිට් එකේ අනිත් හැමදේටම යටින්, නමුත් background එකට උඩින් සිටින සේ z-index එක සකස් කිරීම */
+        z-index: -1 !important; 
         background-color: #060608 !important;
         background: radial-gradient(circle at 30% 30%, #22070d 0%, #060608 85%) !important;
         overflow: hidden !important;
         pointer-events: none !important;
     }
 
-    /* Ambient Glow (Video eke thiyena wage lassanata nivi nivi paththu wena light effect eka) */
+    /* Ambient Glow (ලස්සනට නිවෙමින් පත්තුවන ආලෝකය) */
     .ambient-glow-light {
-        position: absolute;
-        width: 120vw;
-        height: 120vh;
-        top: -10%;
-        left: -10%;
-        background: radial-gradient(circle at 20% 30%, rgba(220, 38, 38, 0.04) 0%, transparent 60%),
-                    radial-gradient(circle at 80% 70%, rgba(147, 51, 234, 0.02) 0%, transparent 50%);
-        filter: blur(50px);
-        animation: cinematicPulse 12s infinite alternate ease-in-out;
+        position: absolute !important;
+        width: 120vw !important;
+        height: 120vh !important;
+        top: -10% !important;
+        left: -10% !important;
+        background: radial-gradient(circle at 20% 30%, rgba(220, 38, 38, 0.05) 0%, transparent 60%),
+                    radial-gradient(circle at 80% 70%, rgba(147, 51, 234, 0.02) 0%, transparent 50%) !important;
+        filter: blur(50px) !important;
+        animation: cinematicPulse 12s infinite alternate ease-in-out !important;
     }
 
-    /* 3D Film Reel - Left Side (Video eke wage paththakin karakena loku reel eka) */
+    /* 3D Film Reel - Left Side (වීඩියෝ එකේ වගේ පැත්තකින් කැරකෙන ලොකු රීල් එක) */
     .film-reel-3d {
-        position: absolute;
-        bottom: -100px;
-        left: -150px;
-        width: 550px;
-        height: 550px;
-        border: 18px solid rgba(255, 255, 255, 0.015);
-        border-radius: 50%;
-        background: radial-gradient(circle, transparent 25%, rgba(0, 0, 0, 0.5) 26%, transparent 70%);
-        box-shadow: inset 0 0 80px rgba(0,0,0,0.9), 0 0 40px rgba(0,0,0,0.6);
-        opacity: 0.12;
-        transform-style: preserve-3d;
-        animation: spinTheReel 90s linear infinite;
+        position: absolute !important;
+        bottom: -100px !important;
+        left: -150px !important;
+        width: 550px !important;
+        height: 550px !important;
+        border: 18px solid rgba(255, 255, 255, 0.015) !important;
+        border-radius: 50% !important;
+        background: radial-gradient(circle, transparent 25%, rgba(0, 0, 0, 0.5) 26%, transparent 70%) !important;
+        box-shadow: inset 0 0 80px rgba(0,0,0,0.9), 0 0 40px rgba(0,0,0,0.6) !important;
+        opacity: 0.15 !important;
+        animation: spinTheReel 90s linear infinite !important;
     }
 
-    /* Reel spokes (Reel eke meda thiyena rawum hitala thiyena thawa kootu) */
+    /* Reel Spokes (රීල් එක මැද තියෙන කූරු) */
     .film-reel-3d::before {
-        content: "";
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        border-radius: 50%;
+        content: "" !important;
+        position: absolute !important;
+        top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+        border-radius: 50% !important;
         background: repeating-conic-gradient(
             from 0deg,
             transparent 0deg,
             transparent 35deg,
             rgba(255, 255, 255, 0.02) 36deg,
             rgba(255, 255, 255, 0.02) 50deg
-        );
+        ) !important;
     }
 
-    /* Floating Film Strips - (Reel eken badila udata floating wela yana film pti 2ka) */
+    /* Floating Film Strips (රීල් එකෙන් මිදී උඩට පාවී යන ෆිල්ම් පටි) */
     .floating-strip {
-        position: absolute;
-        width: 160vw;
-        height: 160px;
-        background: rgba(0, 0, 0, 0.75);
-        border-top: 4px dashed rgba(255, 255, 255, 0.15);
-        border-bottom: 4px dashed rgba(255, 255, 255, 0.15);
-        opacity: 0.08;
+        position: absolute !important;
+        width: 160vw !important;
+        height: 160px !important;
+        background: rgba(0, 0, 0, 0.75) !important;
+        border-top: 4px dashed rgba(255, 255, 255, 0.15) !important;
+        border-bottom: 4px dashed rgba(255, 255, 255, 0.15) !important;
+        opacity: 0.1 !important;
     }
 
     .strip-wave-1 {
-        top: 15%;
-        left: -10%;
-        transform: rotate(-12deg);
-        animation: floatWaveOne 25s infinite alternate ease-in-out;
+        top: 15% !important;
+        left: -10% !important;
+        transform: rotate(-12deg) !important;
+        animation: floatWaveOne 25s infinite alternate ease-in-out !important;
     }
 
     .strip-wave-2 {
-        bottom: 25%;
-        left: -20%;
-        transform: rotate(15deg);
-        animation: floatWaveTwo 30s infinite alternate ease-in-out;
+        bottom: 25% !important;
+        left: -20% !important;
+        transform: rotate(15deg) !important;
+        animation: floatWaveTwo 30s infinite alternate ease-in-out !important;
     }
 
-    /* Animations - Video eke wage hugaak slow eke float wenna container animations */
+    /* Animations Keyframes */
     @keyframes spinTheReel {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
-
     @keyframes floatWaveOne {
         0% { transform: rotate(-12deg) translateY(0px) translateX(0px); }
         100% { transform: rotate(-10deg) translateY(-20px) translateX(-30px); }
     }
-
     @keyframes floatWaveTwo {
         0% { transform: rotate(15deg) translateY(0px); }
         100% { transform: rotate(17deg) translateY(25px); }
     }
-
     @keyframes cinematicPulse {
         0% { opacity: 0.5; transform: scale(1); }
         100% { opacity: 1; transform: scale(1.08); }
     }
 
-    /* FORCE TRANSPARENT - Parana thada kalu paata backgrounds ain karanna meka aniwarayenma one */
-    html, body, #app, main, section, .hero, .movies-container, .container, .wrapper, [class*="bg-"], [class*="background"] {
+    /* 🚨 100%ක්ම වැඩ කරවන ප්‍රධානතම කොටස (FORCE OVERRIDE) 🚨
+       සයිට් එකේ බැක්ග්‍රවුන්ඩ් එක වසාගෙන ඇති සියලුම දේ විනිවිද පෙනෙන ලෙස සකස් කිරීම */
+    html, body, #app, main, section, .hero, .movies-container, .container, .wrapper, 
+    div[class*="bg-"], div[class*="background"], section[class*="bg-"], main[class*="bg-"] {
         background: transparent !important;
         background-color: transparent !important;
     }
 `;
 document.head.appendChild(style);
 
-// 2. HTML Elements Injection - DOM eka ready unama safe widihata inject kirima
+// 2. HTML Elements Injection - ඉතාම ආරක්ෂිතව ඇතුලත් කිරීම
 function injectCinemaAnimation() {
     if (!document.querySelector('.cinema-premium-3d-bg')) {
         const bgContainer = document.createElement('div');
@@ -126,12 +125,12 @@ function injectCinemaAnimation() {
             <div class="film-reel-3d"></div>
         `;
 
-        // Body eke mulatama set karanna
+        // Body එකේ මුලටම (යටින්ම හිටින සේ) ආරක්ෂිතව ඇතුල් කිරීම
         document.body.insertBefore(bgContainer, document.body.firstChild);
     }
 }
 
-// Safe execute checks
+// Safe execution checks
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', injectCinemaAnimation);
 } else {
