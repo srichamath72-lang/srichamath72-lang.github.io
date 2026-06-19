@@ -1,54 +1,51 @@
-// 1. CSS Styles - සයිට් එකේ උඩින්ම ඇනිමේෂන් එක මතු කර පෙන්වීම සඳහා වන Force Override එක
+// 1. Dynamic CSS Styles Fix
 const style = document.createElement('style');
 style.textContent = `
-    /* Main Background Container */
+    /* Absolute Base Layer for Custom Animation */
     .cinema-premium-3d-bg {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
         width: 100vw !important;
         height: 100vh !important;
-        /* සයිට් එකේ අනිත් හැමදේටම යටින්, නමුත් background එකට උඩින් සිටින සේ z-index එක සකස් කිරීම */
-        z-index: -1 !important; 
+        z-index: -999 !important; /* Content ekata yatatama thallu kirima */
         background-color: #060608 !important;
-        background: radial-gradient(circle at 30% 30%, #22070d 0%, #060608 85%) !important;
+        background: radial-gradient(circle at 30% 30%, #1f050b 0%, #060608 90%) !important;
         overflow: hidden !important;
         pointer-events: none !important;
     }
 
-    /* Ambient Glow (ලස්සනට නිවෙමින් පත්තුවන ආලෝකය) */
+    /* Ambient Lighting effect (Pulse Animation) */
     .ambient-glow-light {
         position: absolute !important;
         width: 120vw !important;
         height: 120vh !important;
         top: -10% !important;
         left: -10% !important;
-        background: radial-gradient(circle at 20% 30%, rgba(220, 38, 38, 0.05) 0%, transparent 60%),
-                    radial-gradient(circle at 80% 70%, rgba(147, 51, 234, 0.02) 0%, transparent 50%) !important;
+        background: radial-gradient(circle at 20% 30%, rgba(220, 38, 38, 0.04) 0%, transparent 60%) !important;
         filter: blur(50px) !important;
         animation: cinematicPulse 12s infinite alternate ease-in-out !important;
     }
 
-    /* 3D Film Reel - Left Side (වීඩියෝ එකේ වගේ පැත්තකින් කැරකෙන ලොකු රීල් එක) */
+    /* 3D Film Reel Layout - Left Side Positioned */
     .film-reel-3d {
         position: absolute !important;
-        bottom: -100px !important;
-        left: -150px !important;
-        width: 550px !important;
-        height: 550px !important;
-        border: 18px solid rgba(255, 255, 255, 0.015) !important;
+        bottom: -80px !important;
+        left: -120px !important;
+        width: 500px !important;
+        height: 500px !important;
+        border: 15px solid rgba(255, 255, 255, 0.02) !important;
         border-radius: 50% !important;
-        background: radial-gradient(circle, transparent 25%, rgba(0, 0, 0, 0.5) 26%, transparent 70%) !important;
-        box-shadow: inset 0 0 80px rgba(0,0,0,0.9), 0 0 40px rgba(0,0,0,0.6) !important;
-        opacity: 0.15 !important;
+        background: radial-gradient(circle, transparent 25%, rgba(0, 0, 0, 0.6) 26%, transparent 70%) !important;
+        box-shadow: inset 0 0 60px rgba(0,0,0,0.9), 0 0 30px rgba(0,0,0,0.7) !important;
+        opacity: 0.18 !important;
         animation: spinTheReel 90s linear infinite !important;
     }
 
-    /* Reel Spokes (රීල් එක මැද තියෙන කූරු) */
     .film-reel-3d::before {
         content: "" !important;
         position: absolute !important;
-        top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+        top: 0; left: 0; right: 0; bottom: 0;
         border-radius: 50% !important;
         background: repeating-conic-gradient(
             from 0deg,
@@ -59,60 +56,58 @@ style.textContent = `
         ) !important;
     }
 
-    /* Floating Film Strips (රීල් එකෙන් මිදී උඩට පාවී යන ෆිල්ම් පටි) */
+    /* Floating Film Strips - YouTube Shorts Vibe */
     .floating-strip {
         position: absolute !important;
         width: 160vw !important;
-        height: 160px !important;
-        background: rgba(0, 0, 0, 0.75) !important;
-        border-top: 4px dashed rgba(255, 255, 255, 0.15) !important;
-        border-bottom: 4px dashed rgba(255, 255, 255, 0.15) !important;
-        opacity: 0.1 !important;
+        height: 140px !important;
+        background: rgba(0, 0, 0, 0.7) !important;
+        border-top: 4px dashed rgba(255, 255, 255, 0.2) !important;
+        border-bottom: 4px dashed rgba(255, 255, 255, 0.2) !important;
+        opacity: 0.12 !important;
     }
 
     .strip-wave-1 {
-        top: 15% !important;
+        top: 20% !important;
         left: -10% !important;
-        transform: rotate(-12deg) !important;
+        transform: rotate(-10deg) !important;
         animation: floatWaveOne 25s infinite alternate ease-in-out !important;
     }
 
     .strip-wave-2 {
-        bottom: 25% !important;
-        left: -20% !important;
-        transform: rotate(15deg) !important;
+        bottom: 30% !important;
+        left: -15% !important;
+        transform: rotate(12deg) !important;
         animation: floatWaveTwo 30s infinite alternate ease-in-out !important;
     }
 
-    /* Animations Keyframes */
-    @keyframes spinTheReel {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    @keyframes floatWaveOne {
-        0% { transform: rotate(-12deg) translateY(0px) translateX(0px); }
-        100% { transform: rotate(-10deg) translateY(-20px) translateX(-30px); }
-    }
-    @keyframes floatWaveTwo {
-        0% { transform: rotate(15deg) translateY(0px); }
-        100% { transform: rotate(17deg) translateY(25px); }
-    }
-    @keyframes cinematicPulse {
-        0% { opacity: 0.5; transform: scale(1); }
-        100% { opacity: 1; transform: scale(1.08); }
+    /* Animations Frames */
+    @keyframes spinTheReel { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes floatWaveOne { 0% { transform: rotate(-10deg) translateY(0px); } 100% { transform: rotate(-8deg) translateY(-15px); } }
+    @keyframes floatWaveTwo { 0% { transform: rotate(12deg) translateY(0px); } 100% { transform: rotate(14deg) translateY(20px); } }
+    @keyframes cinematicPulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+
+    /* SAFE OVERRIDE FIX: Mulu site ekama Black wena eka nawattha, content cards bera gatha yuthuyi */
+    html, body {
+        background-color: #060608 !important; /* Base black set kirima */
     }
 
-    /* 🚨 100%ක්ම වැඩ කරවන ප්‍රධානතම කොටස (FORCE OVERRIDE) 🚨
-       සයිට් එකේ බැක්ග්‍රවුන්ඩ් එක වසාගෙන ඇති සියලුම දේ විනිවිද පෙනෙන ලෙස සකස් කිරීම */
-    html, body, #app, main, section, .hero, .movies-container, .container, .wrapper, 
-    div[class*="bg-"], div[class*="background"], section[class*="bg-"], main[class*="bg-"] {
+    /* Cards saha Main navigation block ekata transparent dark color thathwayak dhigha kirima */
+    main, section, .hero, .movies-container, .container, .wrapper {
         background: transparent !important;
         background-color: transparent !important;
+    }
+
+    /* Oyage site eke cards/sections thiyena components walata black layer ekak dimen content eka safe wei */
+    .trending-now, .top-rated, .movie-card, .card {
+        background-color: rgba(15, 15, 20, 0.6) !important; /* Cards lassanata mathu wenna */
+        backdrop-filter: blur(5px);
+        border-radius: 8px;
     }
 `;
 document.head.appendChild(style);
 
-// 2. HTML Elements Injection - ඉතාම ආරක්ෂිතව ඇතුලත් කිරීම
+// 2. DOM Ready Controller for Safe Execution
 function injectCinemaAnimation() {
     if (!document.querySelector('.cinema-premium-3d-bg')) {
         const bgContainer = document.createElement('div');
@@ -125,12 +120,11 @@ function injectCinemaAnimation() {
             <div class="film-reel-3d"></div>
         `;
 
-        // Body එකේ මුලටම (යටින්ම හිටින සේ) ආරක්ෂිතව ඇතුල් කිරීම
+        // Body eke mulatama safe insertion kirima
         document.body.insertBefore(bgContainer, document.body.firstChild);
     }
 }
 
-// Safe execution checks
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', injectCinemaAnimation);
 } else {
